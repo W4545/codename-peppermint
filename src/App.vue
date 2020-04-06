@@ -24,16 +24,6 @@
   </div>
 </template>
 
-<style>
-
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-</style>
 <script>
   import NavigationItem from "./components/NavigationItem";
   import {NavObj} from "./Constructs";
@@ -45,7 +35,8 @@
       return {
         open: false,
         navs: [
-                new NavObj("Home", "home")
+                new NavObj("Home", "home", "/"),
+                new NavObj("About", "about", "/about")
         ]
       }
     },
@@ -59,3 +50,20 @@
     },
   }
 </script>
+
+<style>
+
+  #app {
+    font-family: Avenir, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  .toolbar-title {
+    text-decoration: none;
+  }
+
+  .v-toolbar__title {
+    color: white;
+    text-decoration: none;
+  }
+</style>
