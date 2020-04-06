@@ -1,10 +1,26 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+    <v-app>
+      <v-app-bar app clipped-left>
+        <v-app-bar-nav-icon v-on:click="open = !open"/>
+        <router-link to="/" class="toolbar-title">
+          <v-toolbar-title color="black">Tasks</v-toolbar-title>
+        </router-link>
+      </v-app-bar>
+      <v-navigation-drawer app overlay-opacity="100" v-model="open" clipped>
+        <v-list >
+          <NavigationItem v-for="nav in top" :key="nav.title" :nav="nav"/>
+        </v-list>
+        <template v-slot:append>
+          <v-list>
+            <NavigationItem v-for="nav in bottom" :key="nav.title" :nav="nav"/>
+          </v-list>
+        </template>
+      </v-navigation-drawer>
+      <v-content app>
+        <router-view />
+      </v-content>
+    </v-app>
   </div>
 </template>
 
@@ -17,17 +33,29 @@
   text-align: center;
   color: #2c3e50;
 }
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
 </style>
+<script>
+  import NavigationItem from "./components/NavigationItem";
+  import {NavObj} from "./Constructs";
+  export default {
+    components: {
+      NavigationItem
+    },
+    data: () => {
+      return {
+        open: false,
+        navs: [
+                new NavObj("Home", "home")
+        ]
+      }
+    },
+    computed: {
+      top() {
+        return this.navs.filter(nav => !nav.bottom);
+      },
+      bottom() {
+        return this.navs.filter(nav => nav.bottom);
+      }
+    },
+  }
+</script>
