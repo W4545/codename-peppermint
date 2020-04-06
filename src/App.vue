@@ -4,7 +4,7 @@
       <v-app-bar app clipped-left>
         <v-app-bar-nav-icon v-on:click="open = !open"/>
         <router-link to="/" class="toolbar-title">
-          <v-toolbar-title color="black">Tasks</v-toolbar-title>
+          <v-toolbar-title color="black">Codename Peppermint</v-toolbar-title>
         </router-link>
       </v-app-bar>
       <v-navigation-drawer app overlay-opacity="100" v-model="open" clipped>
@@ -64,6 +64,5 @@
 
   .v-toolbar__title {
     color: white;
-    text-decoration: none;
   }
 </style>
