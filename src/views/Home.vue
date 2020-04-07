@@ -16,6 +16,7 @@
             </v-col>
             <v-btn x-large>Connect</v-btn>
         </v-row>
+        <v-btn @click="resetClick">Reset Credentials</v-btn>
     </v-container>
 
 </template>
@@ -23,6 +24,7 @@
 <script>
     import Card from "../components/Card";
     import {CardObj} from "../Constructs";
+    import {mapMutations} from 'vuex'
 
     export default {
         name: 'Home',
@@ -35,8 +37,11 @@
                 selectCard: new CardObj(-2, "Select an option below!", false, false)
             }
         },
-        mounted() {
-
+        methods: {
+            ...mapMutations['assignUser'],
+            resetClick() {
+                this.$store.commit('assignUser', null);
+            }
         }
     }
 </script>

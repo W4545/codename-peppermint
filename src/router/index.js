@@ -12,9 +12,10 @@ const routes = [
         component: Home
     },
     {
-        path: '/game/:id',
+        path: '/game/:gameID',
         name: 'Game',
-        component: Game
+        component: Game,
+        props: true
     },
     {
         path: '/about',
@@ -29,6 +30,12 @@ const routes = [
         name: 'Settings',
 
         component: () => import('../views/Settings')
+    },
+    {
+        path: '/login/:redirectURL/:optionalID',
+        name: 'Login',
+        component: () => import('../views/Login'),
+        props: true
     }
 
 ];

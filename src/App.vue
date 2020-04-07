@@ -6,6 +6,8 @@
                 <router-link to="/" class="toolbar-title">
                     <v-toolbar-title :class="{'v-toolbar__title-light': !this.$vuetify.theme.dark, 'v-toolbar__title-dark': this.$vuetify.theme.dark}">Codename Peppermint</v-toolbar-title>
                 </router-link>
+                <v-spacer></v-spacer>
+                <v-btn @click="signInSignOutClick">{{signinoutText}}</v-btn>
             </v-app-bar>
             <v-navigation-drawer app overlay-opacity="100" v-model="open" clipped>
                 <v-list >
@@ -27,6 +29,7 @@
 <script>
     import NavigationItem from "./components/NavigationItem";
     import {NavObj} from "./Constructs";
+    import * as firebase from 'firebase'
     export default {
         components: {
             NavigationItem
@@ -39,7 +42,8 @@
                     new NavObj("Game", "gamepad-square-outline", "/game", false, true),
                     new NavObj("About", "about", "/about"),
                     new NavObj("Settings", 'cog-outline', '/settings', true),
-                ]
+                ],
+                signinoutText: 'Sign in'
             }
         },
         computed: {
@@ -52,6 +56,27 @@
         },
         mounted() {
             this.$vuetify.theme.dark = this.$store.getters.getDark;
+        },
+        created() {
+            const ref = this;
+            firebase.auth().onAuthStateChanged(user => {
+                if (user)
+                    ref.signinoutText = 'Sign out'
+                else
+                    ref.signinoutText = 'Sign in'
+            })
+        },
+        methods: {
+            signInSignOutClick() {
+                if (this.signinoutText === 'Sign in')
+                {
+                    this.$router.push('login/');
+                } else {
+                    firebase.auth().signOut().then(() => {
+                        window.location.reload();
+                    })
+                }
+            }
         }
     }
 </script>
