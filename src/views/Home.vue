@@ -1,32 +1,48 @@
 <template>
-  <div class="home">
-    <CardDisplay :cards="cards"/>
-  </div>
+    <v-container class="center">
+        <div id="firebaseui-auth-container">
+
+        </div>
+        <v-row align="center" justify="center">
+            <Card :card="helloCard"/>
+            <Card :card="selectCard"/>
+        </v-row>
+        <v-row align="center" justify="center">
+            <v-btn x-large>New Game</v-btn>
+        </v-row>
+        <v-row align="center" justify="center">
+            <v-col cols="5">
+                <v-text-field label="Join Game"/>
+            </v-col>
+            <v-btn x-large>Connect</v-btn>
+        </v-row>
+    </v-container>
+
 </template>
 
 <script>
-// @ is an alias to /src
-import CardDisplay from "../components/CardDisplay";
-import {CardObj} from "../Constructs";
+    import Card from "../components/Card";
+    import {CardObj} from "../Constructs";
 
-export default {
-  name: 'Home',
-  components: {
-    CardDisplay
-  },
-  data() {
-    return {
+    export default {
+        name: 'Home',
+        components: {
+            Card
+        },
+        data() {
+            return {
+                helloCard: new CardObj(-1, "Welcome to Codename Peppermint!", true, false),
+                selectCard: new CardObj(-2, "Select an option below!", false, false)
+            }
+        },
+        mounted() {
 
+        }
     }
-  },
-  computed: {
-    cards() {
-      let cards = [];
-      for (let  i = 0; i < 30; i++)
-        cards.push(new CardObj(i, `Hello World\n\n${i}`, i % 2 === 0, i % 5 === 0));
-
-      return cards;
-    }
-  }
-}
 </script>
+
+<style scoped>
+    .center {
+        text-align: center;
+    }
+</style>

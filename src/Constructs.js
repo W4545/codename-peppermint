@@ -1,9 +1,10 @@
 class NavObj {
-    constructor(title, icon, link, bottom = false) {
+    constructor(title, icon, link, bottom = false, isDisabled = false) {
         this.title = title;
         this.icon = icon;
         this.to = link;
         this.bottom = bottom;
+        this.isDisabled = isDisabled;
     }
 }
 

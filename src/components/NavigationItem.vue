@@ -1,5 +1,5 @@
 <template>
-    <v-list-item link v-bind:to="nav.to" exact-active-class="active">
+    <v-list-item link v-bind:to="nav.to" exact-active-class="active" :disabled="nav.isDisabled">
         <v-list-item-icon>
             <v-icon>mdi-{{nav.icon}}</v-icon>
         </v-list-item-icon>
