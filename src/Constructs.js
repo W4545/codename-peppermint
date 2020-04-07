@@ -7,6 +7,16 @@ class NavObj {
     }
 }
 
+class CardObj {
+    constructor(id, text, isWhiteCard, isSelectable, isSelected = false) {
+        this.id = id;
+        this.text = text;
+        this.isWhiteCard = isWhiteCard;
+        this.isSelectable = isSelectable;
+        this.isSelected = isSelected;
+    }
+}
+
 export {
-    NavObj
+    NavObj, CardObj
 };
