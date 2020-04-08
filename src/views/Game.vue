@@ -9,7 +9,8 @@
 
 <script>
     import CardDisplay from "../components/CardDisplay";
-    import * as firebase from 'firebase'
+    import firebase from 'firebase/app'
+    import 'firebase/auth'
     export default {
         name: "Game",
         components: {CardDisplay},
@@ -24,8 +25,10 @@
             firebase.auth().onAuthStateChanged(user => {
                 if (user)
                     ref.user = user;
-                else
-                    ref.$router.push(`/login/game/${ref.gameID}`);
+                else {
+                    ref.$store.commit('assignRedirectURL', `/game/${ref.gameID}`);
+                    ref.$router.push(`/login/`);
+                }
             });
         },
         computed: {

@@ -3,8 +3,9 @@ import App from './App.vue'
 import router from './router/index'
 import store from './store/index'
 import vuetify from './plugins/vuetify';
-import * as firebase from "firebase";
+import firebase from "firebase/app";
 import 'firebase/auth'
+import 'firebase/analytics'
 
 Vue.config.productionTip = false;
 
@@ -31,13 +32,5 @@ let vue = new Vue({
 });
 
 vue.$mount('#app');
-
-firebase.auth().onAuthStateChanged(user => {
-  if (user) {
-    store.commit('assignUser', user);
-  } else {
-    store.commit('assignUser', null);
-  }
-});
 
 export default vue;

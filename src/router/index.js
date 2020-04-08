@@ -32,10 +32,9 @@ const routes = [
         component: () => import('../views/Settings')
     },
     {
-        path: '/login/:redirectURL/:optionalID',
+        path: '/login',
         name: 'Login',
         component: () => import('../views/Login'),
-        props: true
     }
 
 ];

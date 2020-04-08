@@ -29,7 +29,8 @@
 <script>
     import NavigationItem from "./components/NavigationItem";
     import {NavObj} from "./Constructs";
-    import * as firebase from 'firebase'
+    import firebase from 'firebase/app'
+    import 'firebase/auth'
     export default {
         components: {
             NavigationItem
@@ -70,7 +71,8 @@
             signInSignOutClick() {
                 if (this.signinoutText === 'Sign in')
                 {
-                    this.$router.push('login/');
+                    this.$store.commit('assignRedirectURL', '/')
+                    this.$router.push('/login/');
                 } else {
                     firebase.auth().signOut().then(() => {
                         window.location.reload();

@@ -14,34 +14,46 @@
 </template>
 
 <script>
-    import * as firebase from 'firebase'
+    import firebase from 'firebase/app'
+    import 'firebase/auth'
     import * as firebaseui from 'firebaseui'
-    import {mapMutations} from 'vuex'
+    import { mapGetters } from 'vuex'
 
     let ui = new firebaseui.auth.AuthUI(firebase.auth());
 
     export default {
         name: "Login",
         mounted() {
-            let ref = this;
-            ui.start('#firebase-hook', {
+            ui.start('#firebase-hook', this.config)
+        },
+        created() {
+            if (this.getRedirectURL) {
+                this.redirect = this.getRedirectURL;
+            }
+            const ref = this;
+            this.config = {
                 signInOptions: [
                     firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-                    firebase.auth.EmailAuthProvider.PROVIDER_ID,
                 ],
                 callbacks: {
                     // eslint-disable-next-line no-unused-vars
                     signInSuccessWithAuthResult(authResult, redirectUrl) {
+                        ref.$store.commit('assignRedirectURL', null);
                         return true;
                     }
                 },
                 signInFlow: 'popup',
-                signInSuccessUrl: `${ref.redirectURL ? `/${ref.redirectURL}` : '/'}${ref.optionalID ? `/${ref.optionalID}` : ''}`
-            })
+                signInSuccessUrl: `${ref.redirect}`
+            }
         },
-        props: ['redirectURL', 'optionalID'],
-        methods: {
-            ...mapMutations(["assignUser"])
+        data: () => {
+            return {
+                redirect: '/',
+                config: null
+            }
+        },
+        computed: {
+            ...mapGetters(['getRedirectURL'])
         }
     }
 </script>

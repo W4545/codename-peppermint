@@ -12,20 +12,20 @@ let vuexPersistence = new VuexPersistence({
 export default new Vuex.Store({
   state: {
     dark: false,
-    user: null
+    redirectURL: null
   },
   mutations: {
     toggleDark(state) {
       state.dark = !state.dark;
       vuetify.framework.theme.dark = state.dark;
     },
-    assignUser(state, user) {
-      state.user = user;
+    assignRedirectURL(state, redirectURL) {
+      state.redirectURL = redirectURL;
     }
   },
   getters: {
     getDark: state => state.dark,
-    getUser: state => state.user,
+    getRedirectURL: state => state.redirectURL,
   },
   actions: {
   },

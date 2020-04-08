@@ -1,30 +1,18 @@
 <template>
-    <v-container class="center">
-        <div id="firebaseui-auth-container">
-
-        </div>
-        <v-row align="center" justify="center">
+    <v-container>
+        <v-row align="center" justify="center" align-content="center">
             <Card :card="helloCard"/>
             <Card :card="selectCard"/>
         </v-row>
-        <v-row align="center" justify="center">
-            <v-btn x-large>New Game</v-btn>
-        </v-row>
-        <v-row align="center" justify="center">
-            <v-col cols="5">
-                <v-text-field label="Join Game"/>
-            </v-col>
-            <v-btn x-large>Connect</v-btn>
-        </v-row>
-        <v-btn @click="resetClick">Reset Credentials</v-btn>
     </v-container>
-
 </template>
 
 <script>
     import Card from "../components/Card";
-    import {CardObj} from "../Constructs";
-    import {mapMutations} from 'vuex'
+    import { CardObj } from "../Constructs";
+    import firebase from 'firebase/app'
+    import 'firebase/auth'
+    import 'firebase/firestore'
 
     export default {
         name: 'Home',
@@ -33,14 +21,17 @@
         },
         data() {
             return {
-                helloCard: new CardObj(-1, "Welcome to Codename Peppermint!", true, false),
-                selectCard: new CardObj(-2, "Select an option below!", false, false)
+                helloCard: new CardObj(-1, "New Game", true, true),
+                selectCard: new CardObj(-2, "Join Game", false, true)
             }
         },
         methods: {
-            ...mapMutations['assignUser'],
             resetClick() {
-                this.$store.commit('assignUser', null);
+                // eslint-disable-next-line no-unused-vars
+                firebase.auth().onAuthStateChanged(user => {
+                    const db = firebase.firestore()
+                    db.collection('cards').get().then(e => console.log(e)).catch(e => console.error(e));
+                })
             }
         }
     }
