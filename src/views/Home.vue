@@ -1,8 +1,8 @@
 <template>
     <v-container>
         <v-row align="center" justify="center" align-content="center">
-            <Card :card="helloCard"/>
-            <Card :card="selectCard"/>
+            <Card :card="helloCard" disable-select-style/>
+            <Card :card="selectCard" disable-select-style/>
         </v-row>
     </v-container>
 </template>

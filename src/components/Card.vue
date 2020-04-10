@@ -24,7 +24,11 @@
     export default {
         name: "Card",
         props: {
-            card: CardObj
+            card: CardObj,
+            disableSelectStyle: {
+                default: false,
+                type: Boolean
+            }
         },
         data() {
             return {
@@ -44,7 +48,9 @@
             },
 
             computeCardColor() {
-                if (this.card.isSelected && this.card.isWhiteCard)
+                if (this.disableSelectStyle)
+                    this.cardColor = this.card.isWhiteCard ? 'white' : 'black'
+                else if (this.card.isSelected && this.card.isWhiteCard)
                     this.cardColor = '#acacac';
                 else if (this.card.isWhiteCard && !this.card.isSelected)
                     this.cardColor = 'white';
