@@ -7,7 +7,7 @@
                     <v-toolbar-title :class="{'v-toolbar__title-light': !this.$vuetify.theme.dark, 'v-toolbar__title-dark': this.$vuetify.theme.dark}">Codename Peppermint</v-toolbar-title>
                 </router-link>
                 <v-spacer></v-spacer>
-                <v-btn @click="signInSignOutClick">{{signinoutText}}</v-btn>
+                <v-btn @click="signInSignOutClick" v-text="signInOutText" :hidden="signInDisabled"></v-btn>
             </v-app-bar>
             <v-navigation-drawer app overlay-opacity="100" v-model="open" clipped>
                 <v-list >
@@ -44,7 +44,8 @@
                     new NavObj("About", "about", "/about"),
                     new NavObj("Settings", 'cog-outline', '/settings', true),
                 ],
-                signinoutText: 'Sign in'
+                signInOutText: 'Sign in',
+                signInDisabled: true
             }
         },
         computed: {
@@ -55,23 +56,22 @@
                 return this.navs.filter(nav => nav.bottom);
             }
         },
-        mounted() {
-            this.$vuetify.theme.dark = this.$store.getters.getDark;
-        },
         created() {
+            this.$vuetify.theme.dark = this.$store.getters.getDark;
             const ref = this;
             firebase.auth().onAuthStateChanged(user => {
                 if (user)
-                    ref.signinoutText = 'Sign out'
+                    ref.signInOutText = 'Sign out'
                 else
-                    ref.signinoutText = 'Sign in'
+                    ref.signInOutText = 'Sign in'
+                ref.signInDisabled = false;
             })
         },
         methods: {
             signInSignOutClick() {
-                if (this.signinoutText === 'Sign in')
+                if (this.signInOutText === 'Sign in')
                 {
-                    this.$store.commit('assignRedirectURL', '/')
+                    this.$store.commit('assignRedirectURL', this.$route.path)
                     this.$router.push('/login/');
                 } else {
                     firebase.auth().signOut().then(() => {

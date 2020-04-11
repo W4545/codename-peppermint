@@ -3,12 +3,12 @@
         <v-row align="center" justify="center">
             <h1>Login</h1>
         </v-row>
+        <v-row align="center" justify="center" v-if="loading">
+            <v-progress-circular indeterminate/>
+        </v-row>
         <v-row align="center" justify="center">
-            <v-col cols="5">
-                <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/3.5.2/firebaseui.css" />
-                <div id="firebase-hook">
-                </div>
-            </v-col>
+            <div id="firebase-hook">
+            </div>
         </v-row>
     </v-container>
 </template>
@@ -40,16 +40,19 @@
                     signInSuccessWithAuthResult(authResult, redirectUrl) {
                         ref.$store.commit('assignRedirectURL', null);
                         return true;
+                    },
+                    uiShown() {
+                        ref.loading = false;
                     }
                 },
-                signInFlow: 'popup',
-                signInSuccessUrl: `${ref.redirect}`
+                signInSuccessUrl: ref.redirect,
             }
         },
         data: () => {
             return {
                 redirect: '/',
-                config: null
+                config: null,
+                loading: true
             }
         },
         computed: {

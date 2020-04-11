@@ -39,9 +39,7 @@
         },
         methods: {
             cardClicked() {
-                if (this.card.isSelectable)
-                {
-                    console.log(`Card ${this.card.id} has been clicked. Toggling selection`);
+                if (this.card.isSelectable) {
                     this.card.isSelected = !this.card.isSelected;
                     this.computeCardColor();
                 }

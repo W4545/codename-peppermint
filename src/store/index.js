@@ -5,12 +5,15 @@ import vuetify from "../plugins/vuetify";
 
 Vue.use(Vuex);
 
-let vuexPersistence = new VuexPersistence({
-  reducer: state => ({dark: state.dark})
+const vuexPersistence = new VuexPersistence({
+  reducer: state => ({
+    dark: state.dark,
+    redirectURL: state.redirectURL
+  })
 });
 
 export default new Vuex.Store({
-  state: {
+  darkModeState: {
     dark: false,
     redirectURL: null
   },
@@ -32,4 +35,4 @@ export default new Vuex.Store({
   modules: {
   },
   plugins: [vuexPersistence.plugin]
-})
+});

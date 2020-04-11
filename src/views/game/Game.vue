@@ -26,7 +26,7 @@
                 if (user)
                     ref.user = user;
                 else {
-                    ref.$store.commit('assignRedirectURL', `/game/${ref.gameID}`);
+                    ref.$store.commit('assignRedirectURL', ref.$route.path);
                     ref.$router.push(`/login/`);
                 }
             });

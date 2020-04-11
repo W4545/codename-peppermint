@@ -1,36 +1,38 @@
 <template>
-    <v-card class="ma-2">
-        <v-card-title>Settings</v-card-title>
+        <v-tabs grow>
+            <v-tab>App</v-tab>
+            <v-tab v-if="userSignedIn">User</v-tab>
+            <v-tab-item>
+                <v-card flat>
+                    <v-card-title>App Settings</v-card-title>
 
-        <v-card-text>
-            <v-container>
-                <v-row>
-                    <v-card flat>
-                        <v-card-title>App Settings</v-card-title>
+                    <v-card-text>
+                        <v-form>
 
-                        <v-card-text>
-                            <v-form>
+                            <v-switch label="Dark Mode" v-on:change="toggleDark" v-model="darkModeState"/>
+                        </v-form>
+                        <v-label class="pa-2">
+                            App settings are saved automatically
+                        </v-label>
+                    </v-card-text>
+                </v-card>
+            </v-tab-item>
+            <v-tab-item>
+                <v-card flat>
+                    <v-card-title>User Settings</v-card-title>
 
-                                <v-switch label="Dark Mode" v-on:change="toggleDark" v-model="state"/>
-                            </v-form>
-                        </v-card-text>
-                    </v-card>
-                </v-row>
-                <v-row v-if="userSignedIn">
-                    <v-card flat>
-                        <v-card-title>User Settings</v-card-title>
+                    <v-card-text>
+                        <v-form ref="userForm">
+                            <v-text-field label="Username" :rules="rules" v-model="username"/>
+                        </v-form>
+                    </v-card-text>
 
-                        <v-card-text>
-                            <v-form ref="userForm">
-                                <v-text-field label="Username" :rules="rules" v-model="username"/>
-                                <v-btn @click="submit" :loading="submitLoading" :disabled="submitDisabled" large>Save</v-btn>
-                            </v-form>
-                        </v-card-text>
-                    </v-card>
-                </v-row>
-            </v-container>
-        </v-card-text>
-    </v-card>
+                    <v-card-actions>
+                        <v-btn @click="submit" :loading="submitLoading" :disabled="submitDisabled" large>Save</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-tab-item>
+        </v-tabs>
 </template>
 
 <script>
@@ -61,7 +63,7 @@
         },
         data: () => {
             return {
-                state: false,
+                darkModeState: false,
                 userSignedIn: false,
                 usernameMin: 4,
                 username: '',
@@ -71,7 +73,7 @@
             }
         },
         created() {
-            this.state = this.$store.getters.getDark;
+            this.darkModeState = this.$store.getters.getDark;
             const ref = this;
             firebase.auth().onAuthStateChanged(user => {
                 if (user) {
