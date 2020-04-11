@@ -8,7 +8,7 @@
 </template>
 
 <script>
-    import CardDisplay from "../components/CardDisplay";
+    import CardDisplay from "../../components/CardDisplay";
     import firebase from 'firebase/app'
     import 'firebase/auth'
     export default {

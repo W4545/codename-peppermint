@@ -23,7 +23,7 @@
                         <v-card-text>
                             <v-form ref="userForm">
                                 <v-text-field label="Username" :rules="rules" v-model="username"/>
-                                <v-btn @click="submit" :loading="submitLoading" :disabled="submitDisabled">Save</v-btn>
+                                <v-btn @click="submit" :loading="submitLoading" :disabled="submitDisabled" large>Save</v-btn>
                             </v-form>
                         </v-card-text>
                     </v-card>
@@ -52,8 +52,6 @@
                         console.error(error);
                         this.toggleSubmit();
                     })
-
-                    console.log(this.user);
                 }
             },
             toggleSubmit() {

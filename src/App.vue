@@ -3,7 +3,7 @@
         <v-app>
             <v-app-bar app clipped-left>
                 <v-app-bar-nav-icon v-on:click="open = !open"/>
-                <router-link to="/" class="toolbar-title">
+                <router-link to="/" class="no-decoration">
                     <v-toolbar-title :class="{'v-toolbar__title-light': !this.$vuetify.theme.dark, 'v-toolbar__title-dark': this.$vuetify.theme.dark}">Codename Peppermint</v-toolbar-title>
                 </router-link>
                 <v-spacer></v-spacer>
@@ -90,7 +90,7 @@
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }
-    .toolbar-title {
+    .no-decoration {
         text-decoration: none;
     }
 

@@ -1,15 +1,19 @@
 <template>
     <v-container>
         <v-row align="center" justify="center" align-content="center">
-            <Card :card="helloCard" disable-select-style/>
-            <Card :card="selectCard" disable-select-style/>
+            <router-link to="/newgame" class="no-decoration">
+                <Card :card="helloCard" disable-select-style/>
+            </router-link>
+            <router-link to='/joingame/none' class="no-decoration">
+                <Card :card="selectCard" disable-select-style/>
+            </router-link>
         </v-row>
     </v-container>
 </template>
 
 <script>
-    import Card from "../components/Card";
-    import { CardObj } from "../Constructs";
+    import Card from "../../components/Card";
+    import { CardObj } from "../../Constructs";
     import firebase from 'firebase/app'
     import 'firebase/auth'
     import 'firebase/firestore'
