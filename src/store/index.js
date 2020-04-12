@@ -13,9 +13,15 @@ const vuexPersistence = new VuexPersistence({
 });
 
 export default new Vuex.Store({
-  darkModeState: {
+  state: {
     dark: false,
-    redirectURL: null
+    redirectURL: null,
+    gameSettings: {
+      name: null,
+      maxPlayers: null,
+      isPublic: null,
+    }
+
   },
   mutations: {
     toggleDark(state) {
@@ -24,11 +30,24 @@ export default new Vuex.Store({
     },
     assignRedirectURL(state, redirectURL) {
       state.redirectURL = redirectURL;
+    },
+    updateMaxPlayers(state, maxPlayers) {
+      state.gameSettings.maxPlayers = maxPlayers;
+    },
+    updateIsPublic(state, isPublic) {
+      state.gameSettings.isPublic = isPublic;
+    },
+    updateName(state, name) {
+      state.gameSettings.name = name;
     }
   },
   getters: {
     getDark: state => state.dark,
     getRedirectURL: state => state.redirectURL,
+    getGameSettings: state => state.gameSettings,
+    getMaxPlayers: state => state.gameSettings.maxPlayers,
+    getIsPublic: state => state.gameSettings.isPublic,
+    getName: state => state.gameSettings.name,
   },
   actions: {
   },
