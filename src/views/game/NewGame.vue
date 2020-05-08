@@ -16,6 +16,7 @@
     import GameSettings from "../../components/GameSettings";
     import firebase from 'firebase/app';
     import 'firebase/auth'
+    import Events from '../../Events'
 
     export default {
         name: "NewGame",
@@ -39,6 +40,8 @@
                     ref.$store.commit('updateName', `${this.user.displayName}'s game`);
                     ref.$store.commit('updateIsPublic', true);
                     ref.visible = true;
+                    const server = this.$store.getters.getServer;
+                    server.emit(Events.client.NEW_GAME, user.uid);
                 } else {
                     ref.$store.commit('assignRedirectURL', ref.$route.path);
                     ref.$router.push('/login');

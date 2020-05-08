@@ -20,8 +20,8 @@ export default new Vuex.Store({
       name: null,
       maxPlayers: null,
       isPublic: null,
-    }
-
+    },
+    server: null
   },
   mutations: {
     toggleDark(state) {
@@ -39,6 +39,9 @@ export default new Vuex.Store({
     },
     updateName(state, name) {
       state.gameSettings.name = name;
+    },
+    setServer(state, server) {
+      state.server = server;
     }
   },
   getters: {
@@ -48,6 +51,7 @@ export default new Vuex.Store({
     getMaxPlayers: state => state.gameSettings.maxPlayers,
     getIsPublic: state => state.gameSettings.isPublic,
     getName: state => state.gameSettings.name,
+    getServer: state => state.server,
   },
   actions: {
   },

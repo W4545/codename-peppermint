@@ -7,6 +7,7 @@
                     <v-toolbar-title :class="{'v-toolbar__title-light': !this.$vuetify.theme.dark, 'v-toolbar__title-dark': this.$vuetify.theme.dark}">Codename Peppermint</v-toolbar-title>
                 </router-link>
                 <v-spacer></v-spacer>
+                <v-btn @click="debug">Debug</v-btn>
                 <v-btn @click="signInSignOutClick" v-text="signInOutText" :hidden="signInDisabled"></v-btn>
             </v-app-bar>
             <v-navigation-drawer app overlay-opacity="100" v-model="open" clipped>
@@ -30,6 +31,7 @@
     import NavigationItem from "./components/NavigationItem";
     import {NavObj} from "./Constructs";
     import firebase from 'firebase/app'
+    import Events from './Events'
     import 'firebase/auth'
     export default {
         components: {
@@ -54,7 +56,7 @@
             },
             bottom() {
                 return this.navs.filter(nav => nav.bottom);
-            }
+            },
         },
         created() {
             this.$vuetify.theme.dark = this.$store.getters.getDark;
@@ -65,7 +67,7 @@
                 else
                     ref.signInOutText = 'Sign in'
                 ref.signInDisabled = false;
-            })
+            });
         },
         methods: {
             signInSignOutClick() {
@@ -78,7 +80,11 @@
                         window.location.reload();
                     })
                 }
-            }
+            },
+            debug() {
+                const server = this.$store.getters.getServer;
+                server.emit(Events.client.SEND_DEBUG);
+            },
         }
     }
 </script>

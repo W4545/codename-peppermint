@@ -6,6 +6,8 @@ import vuetify from './plugins/vuetify';
 import firebase from "firebase/app";
 import 'firebase/auth'
 import 'firebase/analytics'
+import io from 'socket.io-client'
+import Events from './Events'
 
 Vue.config.productionTip = false;
 
@@ -29,6 +31,17 @@ let vue = new Vue({
   vuetify,
   store,
   render: h => h(App)
+});
+
+const server = io('http://localhost:3000');
+vue.$store.commit('setServer', server);
+
+server.on(Events.server.DEBUG, (debug) => {
+  console.log(debug);
+});
+
+server.on(Events.server.GAME_UPDATE, () => {
+
 });
 
 vue.$mount('#app');
