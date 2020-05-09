@@ -26,10 +26,13 @@
                 if (user) {
                     const server = this.$store.getters.getServer;
                     ref.defaults.name = `${user.displayName}'s game`;
-                    server.emit(Events.client.NEW_GAME, user.uid, user.displayName, ref.defaults, (token, game) => {
-                      ref.$store.commit('updateGame', game);
-                      ref.$router.push(`/lobby/${token}`);
-                    });
+                    user.getIdToken(true).then((idToken) => {
+                        server.emit(Events.client.NEW_GAME, idToken, user.displayName, ref.defaults, (token, game) => {
+                            ref.$store.commit('updateGame', game);
+                            ref.$router.push(`/lobby/${token}`);
+                        });
+                    })
+
 
                 } else {
                     ref.$store.commit('assignRedirectURL', ref.$route.path);

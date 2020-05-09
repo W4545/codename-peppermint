@@ -35,14 +35,15 @@
             firebase.auth().onAuthStateChanged(user => {
                 if (user) {
                     const server = ref.$store.getters.getServer;
-
-                    server.emit(Events.client.JOIN_GAME, user.uid, user.displayName, ref.gameToken, (game) => {
-                        if (game !== null) {
-                            ref.$store.commit("updateGame", game);
-                            ref.$router.push(`/lobby/${ref.gameToken}`);
-                        } else {
-                            ref.showDialog = true;
-                        }
+                    user.getIdToken(true).then((userToken) => {
+                        server.emit(Events.client.JOIN_GAME, userToken, user.displayName, ref.gameToken, (game) => {
+                            if (game !== null) {
+                                ref.$store.commit("updateGame", game);
+                                ref.$router.push(`/lobby/${ref.gameToken}`);
+                            } else {
+                                ref.showDialog = true;
+                            }
+                        });
                     });
                 } else {
                     ref.$store.commit('assignRedirectURL', ref.$route.path);

@@ -72,7 +72,9 @@
     methods: {
       updateGame(attribute, value) {
         const server = this.$store.getters.getServer;
-        server.emit(Events.client.SET_SETTINGS, this.user.uid, this.$store.getters.getGame.token, attribute, value)
+        this.user.getIdToken(true)
+            .then((token) =>
+                server.emit(Events.client.SET_SETTINGS, token, this.$store.getters.getGame.token, attribute, value));
       },
     },
     computed: {
