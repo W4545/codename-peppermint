@@ -84,7 +84,7 @@
                     ref.userSignedIn = false;
                     ref.user = null;
                 }
-            })
+            });
         },
         computed: {
             rules() {

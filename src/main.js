@@ -40,8 +40,10 @@ server.on(Events.server.DEBUG, (debug) => {
   console.log(debug);
 });
 
-server.on(Events.server.GAME_UPDATE, () => {
-
+server.on(Events.server.GAME_UPDATE, (game) => {
+  console.log("GAME_UPDATE");
+  console.log(game);
+  vue.$store.commit('updateGame', game);
 });
 
 vue.$mount('#app');
