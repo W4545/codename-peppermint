@@ -11,6 +11,8 @@ const Events = {
         DISCONNECT: "DISCONNECT",
         SET_SETTINGS: "SET_SETTINGS",
         SUBMIT_CARD: "SUBMIT_CARD",
+        UPDATE_USERNAME: "UPDATE_USERNAME",
+        VALIDATE_JOIN_CODE: "VALIDATE_JOIN_CODE",
     },
     server: {
         SET_SETTINGS: "SET_SETTINGS",

@@ -3,7 +3,18 @@
     <v-tab>Lobby</v-tab>
     <v-tab>Settings</v-tab>
     <v-tab-item>
-      <v-label>Insert lobby here</v-label>
+      <v-simple-table>
+        <thead>
+          <tr>
+            <th class="text-left">Username</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in players" :key="item.uid">
+            <td>{{ item.username }}</td>
+          </tr>
+        </tbody>
+      </v-simple-table>
     </v-tab-item>
     <v-tab-item>
       <v-card class="ma-2" :disabled="disabled">
@@ -63,6 +74,11 @@
         const server = this.$store.getters.getServer;
         server.emit(Events.client.SET_SETTINGS, this.user.uid, this.$store.getters.getGame.token, attribute, value)
       },
+    },
+    computed: {
+      players() {
+        return this.$store.getters.getGame.players;
+      }
     }
   }
 </script>

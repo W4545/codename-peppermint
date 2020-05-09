@@ -1,19 +1,17 @@
 <template>
-  <v-container fluid>
-    <v-row align="center" justify="center">
-      <v-progress-circular indeterminate/>
-    </v-row>
-  </v-container>
+  <Loading/>
 </template>
 
 <script>
     import firebase from 'firebase/app';
     import 'firebase/auth'
     import Events from '../../Events'
+    import Loading from "../../components/Loading";
 
     export default {
         name: "NewGame",
-        data: () => {
+      components: {Loading},
+      data: () => {
             return {
                 defaults: {
                     maxPlayers: 10,
@@ -28,7 +26,7 @@
                 if (user) {
                     const server = this.$store.getters.getServer;
                     ref.defaults.name = `${user.displayName}'s game`;
-                    server.emit(Events.client.NEW_GAME, user.uid, ref.defaults, (token, game) => {
+                    server.emit(Events.client.NEW_GAME, user.uid, user.displayName, ref.defaults, (token, game) => {
                       ref.$store.commit('updateGame', game);
                       ref.$router.push(`/lobby/${token}`);
                     });

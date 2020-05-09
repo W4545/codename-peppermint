@@ -11,17 +11,20 @@
                 <v-btn @click="signInSignOutClick" v-text="signInOutText" :hidden="signInDisabled"></v-btn>
             </v-app-bar>
             <v-navigation-drawer app overlay-opacity="100" v-model="open" clipped>
-                <v-list >
-                    <NavigationItem v-for="nav in top" :key="nav.title" :nav="nav"/>
+                <v-list>
+                    <NavigationItem title="Home" icon="home" to="/"/>
+                    <NavigationItem title="Game" icon="gamepad-square-outline" :to="gameLink" :hidden="gameLinkHidden"/>
+                    <NavigationItem title="Lobby" icon="gamepad-square-outline" :to="lobbyLink" :hidden="lobbyLinkHidden"/>
+                    <NavigationItem title="About" icon="about" to="/about"/>
                 </v-list>
                 <template v-slot:append>
                     <v-list>
-                        <NavigationItem v-for="nav in bottom" :key="nav.title" :nav="nav"/>
+                        <NavigationItem title="Settings" icon="cog-outline" to="/settings"/>
                     </v-list>
                 </template>
             </v-navigation-drawer>
-            <v-content app>
-                <router-view />
+            <v-content app >
+                <router-view/>
             </v-content>
         </v-app>
     </div>
@@ -29,7 +32,6 @@
 
 <script>
     import NavigationItem from "./components/NavigationItem";
-    import {NavObj} from "./Constructs";
     import firebase from 'firebase/app'
     import Events from './Events'
     import 'firebase/auth'
@@ -38,25 +40,32 @@
             NavigationItem
         },
         data: () => {
+
             return {
                 open: false,
-                navs: [
-                    new NavObj("Home", "home", "/"),
-                    new NavObj("Game", "gamepad-square-outline", "/game", false, true),
-                    new NavObj("About", "about", "/about"),
-                    new NavObj("Settings", 'cog-outline', '/settings', true),
-                ],
                 signInOutText: 'Sign in',
                 signInDisabled: true
             }
         },
         computed: {
-            top() {
-                return this.navs.filter(nav => !nav.bottom);
+            gameLink() {
+                return `/game/${this.$store.getters.getGame ? this.$store.getters.getGame.token : "none"}`;
             },
-            bottom() {
-                return this.navs.filter(nav => nav.bottom);
+            lobbyLink() {
+                return `/lobby/${this.$store.getters.getGame ? this.$store.getters.getGame.token : "none"}`;
             },
+            gameLinkHidden() {
+                const game = this.$store.getters.getGame;
+                if (!game)
+                    return true;
+                return !game.isStarted;
+            },
+            lobbyLinkHidden() {
+                const game = this.$store.getters.getGame;
+                if (!game)
+                    return true;
+                return game.isStarted;
+            }
         },
         created() {
             this.$vuetify.theme.dark = this.$store.getters.getDark;

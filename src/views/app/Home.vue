@@ -4,9 +4,20 @@
             <router-link to="/newgame" class="no-decoration">
                 <Card :card="helloCard" disable-select-style/>
             </router-link>
-            <router-link to='/joingame/none' class="no-decoration">
-                <Card :card="selectCard" disable-select-style/>
-            </router-link>
+            <v-dialog v-model="dialog">
+                <template v-slot:activator="{ on }">
+                    <div v-on="on">
+                        <Card :card="selectCard" disable-select-style/>
+                    </div>
+                </template>
+                <v-card class="pa-2">
+                    <v-text-field label="Game Token" v-model="joinCode" @change.once="textTyped"/>
+                    <v-label color="red" v-if="incorrect">Provided join code was incorrect.</v-label>
+                    <v-card-actions>
+                        <v-btn @click="join">Join</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-row>
     </v-container>
 </template>
@@ -14,6 +25,7 @@
 <script>
     import Card from "../../components/Card";
     import { CardObj } from "../../Constructs";
+    import Events from "../../Events"
     import firebase from 'firebase/app'
     import 'firebase/auth'
     import 'firebase/firestore'
@@ -26,7 +38,10 @@
         data() {
             return {
                 helloCard: new CardObj(-1, "New Game", true, true),
-                selectCard: new CardObj(-2, "Join Game", false, true)
+                selectCard: new CardObj(-2, "Join Game", false, true),
+                dialog: false,
+                joinCode: "",
+                incorrect: false,
             }
         },
         methods: {
@@ -36,6 +51,22 @@
                     const db = firebase.firestore()
                     db.collection('cards').get().then(e => console.log(e)).catch(e => console.error(e));
                 })
+            },
+            join() {
+                const ref = this;
+                this.$store.getters.getServer.emit(Events.client.VALIDATE_JOIN_CODE, this.joinCode, (isValid) => {
+                    if (isValid) {
+                        const code = ref.joinCode;
+                        ref.joinCode = "";
+                        this.dialog = false;
+                        ref.$router.push(`/joingame/${code}`);
+                    } else {
+                        ref.incorrect = true;
+                    }
+                });
+            },
+            textTyped() {
+                this.incorrect = false;
             }
         }
     }

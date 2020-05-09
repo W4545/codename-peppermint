@@ -1,19 +1,24 @@
 <template>
-    <v-list-item link v-bind:to="nav.to" exact-active-class="active" :disabled="nav.isDisabled">
+    <v-list-item link v-bind:to="to" exact-active-class="active" :hidden="hidden">
         <v-list-item-icon>
-            <v-icon>mdi-{{nav.icon}}</v-icon>
+            <v-icon>mdi-{{icon}}</v-icon>
         </v-list-item-icon>
-        <v-list-item-title>{{nav.title}}</v-list-item-title>
+        <v-list-item-title>{{title}}</v-list-item-title>
     </v-list-item>
 </template>
 
 <script>
-    import {NavObj} from "../Constructs";
 
     export default {
         name: "NavigationItem",
         props: {
-            nav: NavObj
+            to: String,
+            hidden: {
+                default: false,
+                type: Boolean,
+            },
+            icon: String,
+            title: String,
         }
     }
 </script>
