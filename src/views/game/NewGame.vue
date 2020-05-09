@@ -1,7 +1,7 @@
 <template>
     <v-card class="ma-2" :disabled="disabled">
         <v-card-text>
-            <GameSettings :visible="visible"/>
+            <GameSettings :visible="visible" @updateGame="updateGame"/>
             <h1 v-if="!visible">Loading...</h1>
         </v-card-text>
 
@@ -36,12 +36,14 @@
             firebase.auth().onAuthStateChanged(user => {
                 if (user) {
                     ref.user = user;
+                    const server = this.$store.getters.getServer;
+                    server.emit(Events.client.NEW_GAME, user.uid);
+
+                    ref.$emit('update')
                     ref.$store.commit('updateMaxPlayers', 10);
                     ref.$store.commit('updateName', `${this.user.displayName}'s game`);
                     ref.$store.commit('updateIsPublic', true);
                     ref.visible = true;
-                    const server = this.$store.getters.getServer;
-                    server.emit(Events.client.NEW_GAME, user.uid);
                 } else {
                     ref.$store.commit('assignRedirectURL', ref.$route.path);
                     ref.$router.push('/login');
@@ -52,8 +54,12 @@
             start() {
                 this.disabled = true;
                 this.buttonLoading = true;
+            },
+            updateGame(attribute, value) {
+                const server = this.$store.getters.getServer;
+                server.emit(Events.client.SET_SETTINGS, this.user.uid, this.$store.getters.getGame.token, attribute, value)
             }
-        }
+        },
     }
 </script>
 

@@ -16,11 +16,7 @@ export default new Vuex.Store({
   state: {
     dark: false,
     redirectURL: null,
-    gameSettings: {
-      name: null,
-      maxPlayers: null,
-      isPublic: null,
-    },
+    game: null,
     server: null
   },
   mutations: {
@@ -31,14 +27,8 @@ export default new Vuex.Store({
     assignRedirectURL(state, redirectURL) {
       state.redirectURL = redirectURL;
     },
-    updateMaxPlayers(state, maxPlayers) {
-      state.gameSettings.maxPlayers = maxPlayers;
-    },
-    updateIsPublic(state, isPublic) {
-      state.gameSettings.isPublic = isPublic;
-    },
-    updateName(state, name) {
-      state.gameSettings.name = name;
+    updateGame(state, game) {
+      state.game = game;
     },
     setServer(state, server) {
       state.server = server;
@@ -47,11 +37,8 @@ export default new Vuex.Store({
   getters: {
     getDark: state => state.dark,
     getRedirectURL: state => state.redirectURL,
-    getGameSettings: state => state.gameSettings,
-    getMaxPlayers: state => state.gameSettings.maxPlayers,
-    getIsPublic: state => state.gameSettings.isPublic,
-    getName: state => state.gameSettings.name,
     getServer: state => state.server,
+    getGame: state => state.game,
   },
   actions: {
   },
