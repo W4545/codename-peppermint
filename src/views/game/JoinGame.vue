@@ -19,6 +19,24 @@
     import "firebase/auth"
     import Events from "../../Events";
 
+    async function getAuthenticated(server, user) {
+      // eslint-disable-next-line no-unused-vars
+      return await new Promise((resolve, reject) => {
+        user.getIdToken(true).then(token => server.emit(Events.client.AUTHENTICATE, token, success => resolve(success)));
+      })
+    }
+
+    function joinGame(ref, server, user) {
+      server.emit(Events.client.JOIN_GAME, user.displayName, ref.gameToken, (game) => {
+        if (game !== null) {
+          ref.$store.commit("updateGame", game);
+          ref.$router.push(`/lobby/${ref.gameToken}`);
+        } else {
+          ref.showDialog = true;
+        }
+      });
+    }
+
     export default {
         name: "JoinGame",
         components: {Loading},
@@ -34,17 +52,16 @@
             const ref = this;
             firebase.auth().onAuthStateChanged(user => {
                 if (user) {
-                    const server = ref.$store.getters.getServer;
-                    user.getIdToken(true).then((userToken) => {
-                        server.emit(Events.client.JOIN_GAME, userToken, user.displayName, ref.gameToken, (game) => {
-                            if (game !== null) {
-                                ref.$store.commit("updateGame", game);
-                                ref.$router.push(`/lobby/${ref.gameToken}`);
-                            } else {
-                                ref.showDialog = true;
-                            }
-                        });
+                  const server = ref.$store.getters.getServer;
+                  if (!ref.$store.getters.getServerAuthenticationStatus) {
+                    getAuthenticated(server, user).then(success => {
+                      console.log(success);
+                      if (success)
+                        joinGame(ref, server, user);
                     });
+                  } else
+                    joinGame(ref, server, user);
+
                 } else {
                     ref.$store.commit('assignRedirectURL', ref.$route.path);
                     ref.$router.push('/login');

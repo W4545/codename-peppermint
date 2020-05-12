@@ -25,7 +25,6 @@
 <script>
     import Card from "../../components/Card";
     import { CardObj } from "../../Constructs";
-    import Events from "../../Events"
     import firebase from 'firebase/app'
     import 'firebase/auth'
     import 'firebase/firestore'
@@ -53,17 +52,10 @@
                 })
             },
             join() {
-                const ref = this;
-                this.$store.getters.getServer.emit(Events.client.VALIDATE_JOIN_CODE, this.joinCode, (isValid) => {
-                    if (isValid) {
-                        const code = ref.joinCode;
-                        ref.joinCode = "";
-                        this.dialog = false;
-                        ref.$router.push(`/joingame/${code}`);
-                    } else {
-                        ref.incorrect = true;
-                    }
-                });
+                const code = this.joinCode;
+                this.joinCode = "";
+                this.dialog = false;
+                this.$router.push(`/joingame/${code}`);
             },
             textTyped() {
                 this.incorrect = false;

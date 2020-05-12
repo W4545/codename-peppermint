@@ -46,6 +46,10 @@ server.on(Events.server.GAME_UPDATE, (game) => {
   vue.$store.commit('updateGame', game);
 });
 
+server.on(Events.server.AUTHENTICATION_STATUS, status => {
+  vue.$store.commit('setServerAuthenticationStatus', status);
+})
+
 vue.$mount('#app');
 
 export default vue;

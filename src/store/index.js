@@ -17,7 +17,8 @@ export default new Vuex.Store({
     dark: false,
     redirectURL: null,
     game: null,
-    server: null
+    server: null,
+    serverAuthenticationStatus: false,
   },
   mutations: {
     toggleDark(state) {
@@ -32,6 +33,9 @@ export default new Vuex.Store({
     },
     setServer(state, server) {
       state.server = server;
+    },
+    setServerAuthenticationStatus(state, status) {
+      state.serverAuthenticationStatus = status;
     }
   },
   getters: {
@@ -39,6 +43,7 @@ export default new Vuex.Store({
     getRedirectURL: state => state.redirectURL,
     getServer: state => state.server,
     getGame: state => state.game,
+    getServerAuthenticationStatus: state => state.serverAuthenticationStatus,
   },
   actions: {
   },
