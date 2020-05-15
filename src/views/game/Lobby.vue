@@ -1,36 +1,43 @@
 <template>
-  <v-tabs grow>
-    <v-tab>Lobby</v-tab>
-    <v-tab>Settings</v-tab>
-    <v-tab-item>
-      <v-simple-table>
-        <thead>
+  <div>
+    <v-card>
+      <v-card-title v-text="gameTitle"/>
+      <v-card-text>
+        <v-simple-table>
+          <thead>
           <tr>
             <th class="text-left">Username</th>
+            <th class="text-right" v-if="!disabled"></th>
           </tr>
-        </thead>
-        <tbody>
+          </thead>
+          <tbody>
           <tr v-for="item in players" :key="item.uid">
             <td>{{ item.username }}</td>
+            <td class="text-right" v-if="!disabled">
+              <v-btn small>X</v-btn>
+            </td>
           </tr>
-        </tbody>
-      </v-simple-table>
-    </v-tab-item>
-    <v-tab-item>
-      <v-card class="ma-2" :disabled="disabled">
+          </tbody>
+        </v-simple-table>
+      </v-card-text>
+      <v-card-actions>
+        <v-btn @click.stop="showSettings = true">Settings</v-btn>
+        <v-btn @click="start" :disabled="disabled">Start</v-btn>
+      </v-card-actions>
+    </v-card>
+    <v-dialog v-model="showSettings" hide-overlay>
+      <v-card>
         <v-card-text>
-          <GameSettings :visible="visible" @updateGame="updateGame"/>
+          <GameSettings :visible="visible" :disabled="disabled" @updateGame="updateGame"/>
           <h1 v-if="!visible">Loading...</h1>
         </v-card-text>
-        <!--
-        <v-card-actions class="ma-2">
+        <v-card-actions class="ma-0">
           <v-spacer></v-spacer>
-          <v-btn large @click="update" :loading="buttonLoading">Update</v-btn>
+          <v-btn large @click.stop="showSettings = false" :loading="buttonLoading">Close</v-btn>
         </v-card-actions>
-        !-->
       </v-card>
-    </v-tab-item>
-  </v-tabs>
+    </v-dialog>
+  </div>
 </template>
 
 <script>
@@ -47,6 +54,7 @@
         visible: true,
         buttonLoading: false,
         user: null,
+        showSettings: false,
       }
     },
     props: {
@@ -74,10 +82,16 @@
         const server = this.$store.getters.getServer;
         server.emit(Events.client.SET_SETTINGS, this.$store.getters.getGame.token, attribute, value);
       },
+      start() {
+        this.$store.getters.getServer.emit(Events.client.START_GAME);
+      }
     },
     computed: {
       players() {
         return this.$store.getters.getGame.players;
+      },
+      gameTitle() {
+        return this.$store.getters.getGame.name;
       }
     }
   }

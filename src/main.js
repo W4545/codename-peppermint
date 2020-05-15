@@ -44,11 +44,15 @@ server.on(Events.server.GAME_UPDATE, (game) => {
   console.log("GAME_UPDATE");
   console.log(game);
   vue.$store.commit('updateGame', game);
+
+  if (game.isStarted && vue.$router.currentRoute.name === 'Lobby') {
+    vue.$router.push(`/game/${game.token}`);
+  }
 });
 
 server.on(Events.server.AUTHENTICATION_STATUS, status => {
   vue.$store.commit('setServerAuthenticationStatus', status);
-})
+});
 
 vue.$mount('#app');
 

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="ma-2" :visible="visible" flat>
+  <v-card class="ma-2" :visible="visible" flat :disabled="disabled">
     <v-card-title>
       Settings
     </v-card-title>
@@ -46,7 +46,10 @@
         default: true,
         type: Boolean,
       },
-      user: Object,
+      disabled: {
+        default: false,
+        type: Boolean,
+      },
     },
     methods: {
       updateName(e) {
