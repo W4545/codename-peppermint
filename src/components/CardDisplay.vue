@@ -8,7 +8,6 @@
 
 <script>
     import Card from "./Card";
-    import {CardObj} from "../Constructs";
 
     export default {
         name: "CardDisplay",
@@ -16,7 +15,7 @@
             Card
         },
         props: {
-            cards: Array[CardObj],
+            cards: Array[Object],
             rowSize: {
                 default: 6,
                 type: Number

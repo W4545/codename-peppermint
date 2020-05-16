@@ -3,15 +3,13 @@
         <v-card v-if="card.isSelectable" class="ma-2" min-width="15rem" max-width="14rem" min-height="20rem"
                 :color="cardColor" :elevation="card.isSelected || hover ? 24 : 2" @click="cardClicked">
             <v-card-text class="title">
-                <div :class="{'black-card': !card.isWhiteCard, 'white-card': card.isWhiteCard}">
-                    {{card.text}}
+                <div :class="{'black-card': !card.isWhiteCard, 'white-card': card.isWhiteCard}" v-html="card.text">
                 </div>
             </v-card-text>
         </v-card>
         <v-card v-else class="ma-2" min-width="15rem" max-width="14rem" min-height="20rem" :color="cardColor">
             <v-card-text class="title">
-                <div :class="{'black-card': !card.isWhiteCard, 'white-card': card.isWhiteCard}">
-                    {{card.text}}
+                <div :class="{'black-card': !card.isWhiteCard, 'white-card': card.isWhiteCard}" v-html="card.text">
                 </div>
             </v-card-text>
         </v-card>
@@ -19,16 +17,15 @@
 </template>
 
 <script>
-    import {CardObj} from "../Constructs";
 
     export default {
         name: "Card",
         props: {
-            card: CardObj,
+            card: Object,
             disableSelectStyle: {
                 default: false,
                 type: Boolean
-            }
+            },
         },
         data() {
             return {

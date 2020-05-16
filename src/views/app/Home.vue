@@ -24,7 +24,6 @@
 
 <script>
     import Card from "../../components/Card";
-    import { CardObj } from "../../Constructs";
     import firebase from 'firebase/app'
     import 'firebase/auth'
     import 'firebase/firestore'
@@ -36,8 +35,8 @@
         },
         data() {
             return {
-                helloCard: new CardObj(-1, "New Game", true, true),
-                selectCard: new CardObj(-2, "Join Game", false, true),
+                helloCard: {id: 0, text: "New Game", isWhiteCard: true, isSelectable: true},
+                selectCard: {id: 1, text: "Join Game", isWhiteCard: false, isSelectable: true},
                 dialog: false,
                 joinCode: "",
                 incorrect: false,

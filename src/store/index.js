@@ -19,6 +19,8 @@ export default new Vuex.Store({
     game: null,
     server: null,
     serverAuthenticationStatus: false,
+    whiteCards: null,
+    blackCards: null,
   },
   mutations: {
     toggleDark(state) {
@@ -36,6 +38,12 @@ export default new Vuex.Store({
     },
     setServerAuthenticationStatus(state, status) {
       state.serverAuthenticationStatus = status;
+    },
+    setWhiteCards(state, cards) {
+      state.whiteCards = cards;
+    },
+    setBlackCards(state, cards) {
+      state.blackCards = cards;
     }
   },
   getters: {
@@ -44,6 +52,10 @@ export default new Vuex.Store({
     getServer: state => state.server,
     getGame: state => state.game,
     getServerAuthenticationStatus: state => state.serverAuthenticationStatus,
+    getWhiteCards: state => state.whiteCards,
+    getBlackCards: state => state.blackCards,
+    getWhiteCard: (state, pos) => state.whiteCards[pos],
+    getBlackCard: (state, pos) => state.blackCards[pos],
   },
   actions: {
   },

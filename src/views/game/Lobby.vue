@@ -71,6 +71,9 @@
           ref.user = user;
           if (game.owner === ref.user.uid)
             ref.disabled = false;
+          if (ref.$store.getters.getGame.isStarted) {
+            ref.$router.push(`/game/${ref.gameToken}`);
+          }
         } else {
           ref.$store.commit('assignRedirectURL', ref.$route.path);
           ref.$router.push('/login');

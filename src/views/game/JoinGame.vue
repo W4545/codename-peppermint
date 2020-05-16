@@ -27,9 +27,11 @@
     }
 
     function joinGame(ref, server, user) {
-      server.emit(Events.client.JOIN_GAME, user.displayName, ref.gameToken, (game) => {
+      server.emit(Events.client.JOIN_GAME, user.displayName, ref.gameToken, (game, blackCards, whiteCards) => {
         if (game !== null) {
           ref.$store.commit("updateGame", game);
+          ref.$store.commit('setBlackCards', blackCards);
+          ref.$store.commit('setWhiteCards', whiteCards);
           ref.$router.push(`/lobby/${ref.gameToken}`);
         } else {
           ref.showDialog = true;

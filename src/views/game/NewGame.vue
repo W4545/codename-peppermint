@@ -18,9 +18,11 @@
     function newGame(ref, user, server) {
       ref.defaults.name = `${user.displayName}'s game`;
       console.log("asking for game");
-      server.emit(Events.client.NEW_GAME, user.displayName, ref.defaults, (token, game) => {
+      server.emit(Events.client.NEW_GAME, user.displayName, ref.defaults, (token, game, blackCards, whiteCards) => {
         console.log("do I even get called?");
         ref.$store.commit('updateGame', game);
+        ref.$store.commit('setWhiteCards', whiteCards);
+        ref.$store.commit('setBlackCards', blackCards);
         ref.$router.push(`/lobby/${token}`);
       });
     }
