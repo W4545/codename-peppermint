@@ -1,19 +1,19 @@
 <template>
-    <v-hover v-slot:default="{ hover }" :disabled="!card.isSelectable">
-        <v-card v-if="card.isSelectable" class="ma-2" min-width="15rem" max-width="14rem" min-height="20rem"
-                :color="cardColor" :elevation="card.isSelected || hover ? 24 : 2" @click="cardClicked">
+    <v-hover v-if="isSelectable" v-slot:default="{ hover }" :disabled="!isSelectable">
+        <v-card  class="ma-2" min-width="15rem" max-width="14rem" min-height="20rem"
+                :color="cardColor" :elevation="isSelected || hover ? 24 : 2" @click="cardClicked">
             <v-card-text class="title">
-                <div :class="{'black-card': !card.isWhiteCard, 'white-card': card.isWhiteCard}" v-html="card.text">
-                </div>
-            </v-card-text>
-        </v-card>
-        <v-card v-else class="ma-2" min-width="15rem" max-width="14rem" min-height="20rem" :color="cardColor">
-            <v-card-text class="title">
-                <div :class="{'black-card': !card.isWhiteCard, 'white-card': card.isWhiteCard}" v-html="card.text">
+                <div :class="{'black-card': !isWhiteCard, 'white-card': isWhiteCard}" v-html="text">
                 </div>
             </v-card-text>
         </v-card>
     </v-hover>
+    <v-card v-else class="ma-2" min-width="15rem" max-width="14rem" min-height="20rem" :color="cardColor">
+        <v-card-text class="title">
+            <div :class="{'black-card': !isWhiteCard, 'white-card': isWhiteCard}" v-html="text">
+            </div>
+        </v-card-text>
+    </v-card>
 </template>
 
 <script>
@@ -21,7 +21,10 @@
     export default {
         name: "Card",
         props: {
-            card: Object,
+            text: String,
+            id: Number,
+            isSelectable: Boolean,
+            isWhiteCard: Boolean,
             disableSelectStyle: {
                 default: false,
                 type: Boolean
@@ -29,27 +32,27 @@
         },
         data() {
             return {
-                cardColor: 'black'
+                cardColor: 'black',
+                isSelected: false,
             }
-        },
-        computed: {
         },
         methods: {
             cardClicked() {
-                if (this.card.isSelectable) {
-                    this.card.isSelected = !this.card.isSelected;
+                if (this.isSelectable) {
+                    this.isSelected = !this.isSelected;
                     this.computeCardColor();
+                    this.$emit("cardClicked", this.id);
                 }
             },
 
             computeCardColor() {
                 if (this.disableSelectStyle)
-                    this.cardColor = this.card.isWhiteCard ? 'white' : 'black'
-                else if (this.card.isSelected && this.card.isWhiteCard)
+                    this.cardColor = this.isWhiteCard ? 'white' : 'black'
+                else if (this.isSelected && this.isWhiteCard)
                     this.cardColor = '#acacac';
-                else if (this.card.isWhiteCard && !this.card.isSelected)
+                else if (this.isWhiteCard && !this.isSelected)
                     this.cardColor = 'white';
-                else if (!this.card.isWhiteCard && this.card.isSelected)
+                else if (!this.isWhiteCard && this.isSelected)
                     this.cardColor = '#424242';
                 else
                     this.cardColor = 'black';

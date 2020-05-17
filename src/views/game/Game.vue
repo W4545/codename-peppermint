@@ -1,7 +1,7 @@
 <template>
     <v-container fluid>
         <v-row dense>
-            <v-col cols="2">
+            <v-col class="flex-grow-0">
                 <v-card class="fill-height">
                     <v-card-title>
                         Black Card
@@ -17,27 +17,20 @@
                         Played Cards
                     </v-card-title>
                     <v-card-text>
-                        <CardDisplay :cards="playedCards"/>
+                        <CardDisplay :cards="playedCards" @cardClicked="playSelected"/>
                     </v-card-text>
                 </v-card>
             </v-col>
-            <v-col cols="2">
+            <v-col class="flex-grow-0">
                 <v-card class="fill-height">
                     <v-container fluid class="align-baseline fill-height">
-                        <v-row align="top" justify="center">
-                            <v-col>
-                                <v-btn large>Settings</v-btn>
-                            </v-col>
-                            <v-col>
-                                <v-btn large>Get Link</v-btn>
-                            </v-col>
-                        </v-row>
-                        <v-row align="end">
+                        <v-row align="baseline">
                             <v-simple-table class="flex-grow-1">
                                 <thead>
                                 <tr>
                                     <th class="text-left">Username</th>
                                     <th class="text-left">Score</th>
+                                    <th></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -46,11 +39,27 @@
                                     <td class="text-left">
                                         {{ item.score }}
                                     </td>
+                                    <td v-if="item.czar">
+                                        czar
+                                    </td>
+                                    <td v-else>
+
+                                    </td>
                                 </tr>
                                 </tbody>
                             </v-simple-table>
                         </v-row>
-
+                        <v-row justify="center">
+                            <v-col>
+                                <v-btn>Settings</v-btn>
+                            </v-col>
+                            <v-col>
+                                <v-btn>Get Link</v-btn>
+                            </v-col>
+                            <v-col>
+                                <v-btn @click="submit">Submit</v-btn>
+                            </v-col>
+                        </v-row>
                     </v-container>
                 </v-card>
             </v-col>
@@ -62,13 +71,13 @@
                         Your Hand
                     </v-card-title>
                     <v-card-text>
-                        <CardDisplay :cards="yourHand"/>
+                        <CardDisplay :cards="hand" @cardClicked="handSelected"/>
                     </v-card-text>
                 </v-card>
             </v-col>
         </v-row>
         <v-row>
-            <v-btn @click="submit">Submit</v-btn>
+
         </v-row>
     </v-container>
 </template>
@@ -85,8 +94,10 @@
         data: () => {
             return {
                 user: null,
-                cards: [{id: -1, text: "Welcome to hell"}],
-
+                hand: [],
+                playedCards: [],
+                handSelectedCards: [],
+                selectedPlayedCards: [],
             }
         },
         created() {
@@ -100,28 +111,49 @@
                 }
             });
         },
+        watch: {
+            handFromStore: function () {
+                this.hand.splice(0, this.hand.length);
+                const cards = this.handFromStore;
+                cards.forEach(card => this.hand.push(card));
+            },
+            playedCardsFromStore: function () {
+                this.playedCards.splice(0, this.playedCards.length);
+                const cards = this.playedCardsFromStore;
+                cards.forEach(card => this.playedCards.push(card));
+            },
+        },
         computed: {
-            yourHand() {
+            handFromStore() {
+                console.log("running youHand");
                 if (this.user) {
                     const whiteCards = this.$store.getters.getWhiteCards;
-                    const isSelectable = !this.$store.getters.getGame.currentRound.picking;
-                    return this.$store.getters.getGame.hands.find(element => element.uid === this.user.uid).cards.map(id => {
+                    const czar_uid = this.$store.getters.getGame.currentRound.czar.uid;
+                    let isSelectable = !this.$store.getters.getGame.currentRound.picking;
+                    if (czar_uid === this.user.uid)
+                        isSelectable = false;
+                    const cards = this.$store.getters.getGame.hands.find(element => element.uid === this.user.uid).cards.map(id => {
                         const card = whiteCards.find(card => id === card.id);
                         card.isWhiteCard = true;
                         card.isSelectable = isSelectable;
                         card.isSelected = false;
                         return card;
                     });
+                    console.log(cards);
+                    return cards;
                 }
-                return null;
+                return [];
+
             },
             blackCard() {
                 const blackCard = this.$store.getters.getGame.currentRound.blackCard;
                 return [this.$store.getters.getBlackCards.find(value => value.id === blackCard)];
             },
-            playedCards() {
+            playedCardsFromStore() {
                 const round = this.$store.getters.getGame.currentRound;
                 const whiteCards = this.$store.getters.getWhiteCards;
+                if (!this.user)
+                    return [];
                 if (round && round.picking) {
                     const isSelectable = round.czar.uid === this.user.uid;
                     return round.playedCards.map(playedCard => {
@@ -147,28 +179,51 @@
                 }
             },
             players() {
-                return this.$store.getters.getGame.players.filter(player => player.isActive);
-            }
+                return this.$store.getters.getGame.players.filter(player => player.isActive).map(player => {
+                    if (player.uid === this.$store.getters.getGame.currentRound.czar.uid)
+                        player.czar = true;
+                    return player;
+                });
+            },
         },
         methods: {
             submit() {
                 if (this.$store.getters.getGame.currentRound.picking) {
                     const pickCount = this.blackCard[0].pick;
-                    const selectedCards = this.playedCards.filter(card => card.isSelected);
-                    if (selectedCards.length > pickCount) {
+                    if (this.selectedPlayedCards.length !== pickCount) {
                         alert(`You may only select ${pickCount} ${pickCount === 1 ? "card." : "cards."}`);
+                        console.log(this.selectedPlayedCards);
                     } else {
-                        this.$store.getters.getServer.emit(Events.client.PICK_WINNER, selectedCards.map(card => {
-                            return { id: card.id, uid: card.uid }
+                        this.$store.getters.getServer.emit(Events.client.PICK_WINNER, this.selectedPlayedCards.map(card => {
+                            const uid = this.$store.getters.getGame.currentRound.playedCards.find(value => value.id === card.id).uid;
+                            return { id: card.id, uid: uid }
                         }));
+                        this.selectedPlayedCards.splice(0, this.selectedPlayedCards.length);
                     }
                 } else {
                     const pickCount = this.blackCard[0].pick;
-                    const selectedCards = this.yourHand.filter(card => card.isSelected);
-                    if (selectedCards.length !== pickCount)
+                    if (this.handSelectedCards.length !== pickCount)
                         alert(`You may only select ${pickCount} ${pickCount === 1 ? "card." : "cards."}`);
-                    else
-                        this.$store.getters.getServer.emit(Events.client.SUBMIT_CARD, selectedCards.map(card => card.id));
+                    else {
+                        this.$store.getters.getServer.emit(Events.client.SUBMIT_CARD, this.handSelectedCards);
+                        this.handSelectedCards.splice(0, this.handSelectedCards.length);
+                    }
+                }
+            },
+            handSelected(e) {
+                const index = this.handSelectedCards.indexOf(e);
+                if (index !== -1) {
+                    this.handSelectedCards.splice(index, 1);
+                } else {
+                    this.handSelectedCards.push(e);
+                }
+            },
+            playSelected(e) {
+                const index = this.selectedPlayedCards.indexOf(e);
+                if (index !== -1) {
+                    this.selectedPlayedCards.splice(index, 1);
+                } else {
+                    this.selectedPlayedCards.push(e);
                 }
             }
         }

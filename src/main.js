@@ -33,7 +33,7 @@ let vue = new Vue({
   render: h => h(App)
 });
 
-const server = io('http://localhost:3000');
+const server = io('http://73.137.255.226:3000/');
 vue.$store.commit('setServer', server);
 
 server.on(Events.server.DEBUG, (debug) => {
