@@ -2,7 +2,7 @@
     <v-container>
         <v-row align="center" justify="center" align-content="center">
             <router-link to="/newgame" class="no-decoration">
-                <Card disable-select-style text="New Game" is-white-card/>
+                <Card disable-select-style text="New Game" is-white-card is-selectable/>
             </router-link>
             <v-dialog v-model="dialog">
                 <template v-slot:activator="{ on }">

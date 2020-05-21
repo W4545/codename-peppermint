@@ -17,6 +17,7 @@ const Events = {
         CHECK_AUTHENTICATION_STATUS: "CHECK_AUTHENTICATION_STATUS",
         START_GAME: "START_GAME",
         PICK_WINNER: "PICK_WINNER",
+        RECONNECT: "RECONNECT",
     },
     server: {
         SET_SETTINGS: "SET_SETTINGS",

@@ -32,9 +32,20 @@ let vue = new Vue({
   store,
   render: h => h(App)
 });
-
-const server = io('http://73.137.255.226:3000/');
+const server = io('http://localhost:3000/');
 vue.$store.commit('setServer', server);
+
+server.on('connect', () => {
+  const game = vue.$store.getters.getGame;
+  if (game && vue.$store.getters.getConnectionFailure) {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+
+        server.emit(Events.client.RECONNECT);
+      }
+    })
+  }
+});
 
 server.on(Events.server.DEBUG, (debug) => {
   console.log(debug);
@@ -53,6 +64,14 @@ server.on(Events.server.GAME_UPDATE, (game) => {
 server.on(Events.server.AUTHENTICATION_STATUS, status => {
   vue.$store.commit('setServerAuthenticationStatus', status);
 });
+
+server.on(Events.server.DISCONNECT, () => {
+  if (vue.$store.getters.getGame) {
+    vue.$store.commit('setConnectionFailure', true);
+  }
+});
+
+
 
 vue.$mount('#app');
 

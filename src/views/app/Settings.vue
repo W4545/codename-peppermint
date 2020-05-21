@@ -37,6 +37,7 @@
 
 <script>
     import {mapMutations} from 'vuex'
+    import Events from '../../Events'
     import firebase from 'firebase/app'
     import 'firebase/auth'
     import 'firebase/firestore'
@@ -50,7 +51,13 @@
                 if (this.$refs.userForm.validate()) {
                     this.user.updateProfile({
                         displayName: this.username
-                    }).then(() => this.toggleSubmit()).catch(error => {
+                    }).then(() => {
+                        this.toggleSubmit();
+                        const game = this.$store.getters.getGame;
+                        if (game) {
+                            this.$store.getters.getServer.emit(Events.client.UPDATE_USERNAME, this.username);
+                        }
+                    }).catch(error => {
                         console.error(error);
                         this.toggleSubmit();
                     })

@@ -21,6 +21,7 @@ export default new Vuex.Store({
     serverAuthenticationStatus: false,
     whiteCards: null,
     blackCards: null,
+    connectionFailure: false,
   },
   mutations: {
     toggleDark(state) {
@@ -44,7 +45,10 @@ export default new Vuex.Store({
     },
     setBlackCards(state, cards) {
       state.blackCards = cards;
-    }
+    },
+    setConnectionFailure(state, failed) {
+      state.connectionFailure = failed;
+    },
   },
   getters: {
     getDark: state => state.dark,
@@ -56,6 +60,7 @@ export default new Vuex.Store({
     getBlackCards: state => state.blackCards,
     getWhiteCard: (state, pos) => state.whiteCards[pos],
     getBlackCard: (state, pos) => state.blackCards[pos],
+    getConnectionFailure: state => state.connectionFailure,
   },
   actions: {
   },

@@ -20,43 +20,40 @@
 
   export default {
     name: "Card",
-    model: {
-      prop: 'isSelected',
-      event: 'changed',
-    },
     props: {
       text: String,
       id: Number,
       isSelectable: Boolean,
       isWhiteCard: Boolean,
-      isSelected: Boolean,
       disableSelectStyle: {
         default: false,
         type: Boolean
       },
+      selected: Boolean,
     },
     data() {
       return {
         cardColor: 'black',
+        isSelected: false,
       }
     },
     methods: {
       cardClicked() {
         if (this.isSelectable) {
-          const newVal = !this.isSelected;
-          this.$emit("changed", newVal);
-          this.computeCardColor(newVal);
+          this.isSelected = !this.isSelected;
+          this.$emit("changed", this.isSelected);
+          this.computeCardColor();
         }
       },
 
-      computeCardColor(newVal) {
+      computeCardColor() {
         if (this.disableSelectStyle)
           this.cardColor = this.isWhiteCard ? 'white' : 'black'
-        else if (newVal && this.isWhiteCard)
+        else if (this.isSelected && this.isWhiteCard)
           this.cardColor = '#acacac';
-        else if (this.isWhiteCard && !newVal)
+        else if (this.isWhiteCard && !this.isSelected)
           this.cardColor = 'white';
-        else if (!this.isWhiteCard && newVal)
+        else if (!this.isWhiteCard && this.isSelected)
           this.cardColor = '#424242';
         else
           this.cardColor = 'black';
@@ -64,6 +61,7 @@
 
     },
     created() {
+      this.isSelected = this.selected;
       this.computeCardColor();
     },
   }

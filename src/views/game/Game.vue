@@ -7,7 +7,7 @@
             Black Card
           </v-card-title>
           <v-card-text>
-            <CardDisplay :cards="blackCard"/>
+            <Card v-if="blackCard" disable-select-style :text="blackCard.text"/>
           </v-card-text>
         </v-card>
       </v-col>
@@ -17,7 +17,11 @@
             Played Cards
           </v-card-title>
           <v-card-text>
-            <Card v-for="card in playedCards" :key="card.id" :is-selectable="card.isSelectable" :id="card.id" :text="card.text" :is-white-card="card.isWhiteCard" v-model="card.isSelected"/>
+            <v-row no-gutters dense>
+              <v-col v-for="(card, index) in playedCards" :key="card.key">
+                <Card :is-selectable="card.isSelectable" :id="card.id" :text="card.text" :is-white-card="card.isWhiteCard" @changed="e => playedCards[index].isSelected = e" :selected="card.isSelected"/>
+              </v-col>
+            </v-row>
           </v-card-text>
         </v-card>
       </v-col>
@@ -71,9 +75,9 @@
             Your Hand
           </v-card-title>
           <v-card-text>
-            <v-row no-gutters>
-              <v-col v-for="card in hand" :key="card.id">
-                <Card :is-selectable="card.isSelectable" :id="card.id" :text="card.text" :is-white-card="card.isWhiteCard" v-model="card.isSelected"/>
+            <v-row no-gutters dense>
+              <v-col v-for="(card, index) in hand" :key="card.key">
+                <Card :is-selectable="card.isSelectable" :id="card.id" :text="card.text" :is-white-card="card.isWhiteCard" @changed="e => hand[index].isSelected = e" :selected="card.isSelected"/>
               </v-col>
             </v-row>
           </v-card-text>
@@ -87,22 +91,20 @@
 </template>
 
 <script>
-    import CardDisplay from "../../components/CardDisplay";
     import Card from "../../components/Card";
     import Events from '../../Events'
     import firebase from 'firebase/app'
+    import crypto from 'crypto'
     import 'firebase/auth'
     export default {
         name: "Game",
-        components: {CardDisplay, Card},
+        components: { Card },
         props: ['gameID'],
         data: () => {
             return {
                 user: null,
                 hand: [],
                 playedCards: [],
-                handSelectedCards: [],
-                selectedPlayedCards: [],
             }
         },
         created() {
@@ -142,7 +144,9 @@
                         card.isWhiteCard = true;
                         card.isSelectable = isSelectable;
                         card.isSelected = false;
-                        return card;
+                        card.key = crypto.randomBytes(10).toString("hex");
+
+                      return card;
                     });
                     console.log(cards);
                     return cards;
@@ -152,7 +156,7 @@
             },
             blackCard() {
                 const blackCard = this.$store.getters.getGame.currentRound.blackCard;
-                return [this.$store.getters.getBlackCards.find(value => value.id === blackCard)];
+                return this.$store.getters.getBlackCards.find(value => value.id === blackCard);
             },
             playedCardsFromStore() {
                 const round = this.$store.getters.getGame.currentRound;
@@ -167,18 +171,20 @@
                         card.isSelectable = isSelectable;
                         card.isSelected = false;
                         card.uid = playedCard.uid;
+                        card.key = crypto.randomBytes(10).toString("hex");
 
-                        return card;
+                      return card;
                     });
                 } else {
                     return round.playedCards.map(playedCard => {
                        return {
-                           id: playedCard.card,
-                           text: "",
-                           isWhiteCard: true,
-                           isSelectable: false,
-                           isSelected: false,
-                           uid: playedCard.uid,
+                         id: playedCard.card,
+                         text: "",
+                         isWhiteCard: true,
+                         isSelectable: false,
+                         isSelected: false,
+                         uid: playedCard.uid,
+                         key: crypto.randomBytes(10).toString("hex"),
                        }
                     });
                 }
@@ -194,25 +200,26 @@
         methods: {
             submit() {
                 if (this.$store.getters.getGame.currentRound.picking) {
-                    const pickCount = this.blackCard[0].pick;
-                    if (this.selectedPlayedCards.length !== pickCount) {
+                    const pickCount = this.blackCard.pick;
+                    const selectedPlayedCards = this.playedCards.filter(card => card.isSelected);
+                    if (selectedPlayedCards.length !== pickCount) {
+                      console.log(this.blackCard);
                         alert(`You may only select ${pickCount} ${pickCount === 1 ? "card." : "cards."}`);
-                        console.log(this.selectedPlayedCards);
+                        console.log(selectedPlayedCards);
                     } else {
-                        this.$store.getters.getServer.emit(Events.client.PICK_WINNER, this.selectedPlayedCards.map(card => {
-                            const uid = this.$store.getters.getGame.currentRound.playedCards.find(value => value.id === card.id).uid;
-                            return { id: card.id, uid: uid }
+                        this.$store.getters.getServer.emit(Events.client.PICK_WINNER, selectedPlayedCards.map(card => {
+                            return { id: card.id, uid: card.uid }
                         }));
-                        this.selectedPlayedCards.splice(0, this.selectedPlayedCards.length);
                     }
                 } else {
-                    const pickCount = this.blackCard[0].pick;
-                    if (this.handSelectedCards.length !== pickCount)
-                        alert(`You may only select ${pickCount} ${pickCount === 1 ? "card." : "cards."}`);
-                    else {
-                        this.$store.getters.getServer.emit(Events.client.SUBMIT_CARD, this.handSelectedCards);
-                        this.handSelectedCards.splice(0, this.handSelectedCards.length);
-                    }
+                  const pickCount = this.blackCard.pick;
+                  const handSelectedCards = this.hand.filter(card => card.isSelected);
+                  if (handSelectedCards.length !== pickCount) {
+                    console.log(this.blackCard);
+                    alert(`You may only select ${pickCount} ${pickCount === 1 ? "card." : "cards."}`);
+                  } else {
+                    this.$store.getters.getServer.emit(Events.client.SUBMIT_CARD, handSelectedCards.map(card => card.id));
+                  }
                 }
             },
         }
