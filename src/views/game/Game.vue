@@ -1,95 +1,100 @@
 <template>
-    <v-container fluid>
-        <v-row dense>
-            <v-col class="flex-grow-0">
-                <v-card class="fill-height">
-                    <v-card-title>
-                        Black Card
-                    </v-card-title>
-                    <v-card-text>
-                        <CardDisplay :cards="blackCard"/>
-                    </v-card-text>
-                </v-card>
-            </v-col>
-            <v-col>
-                <v-card class="fill-height">
-                    <v-card-title>
-                        Played Cards
-                    </v-card-title>
-                    <v-card-text>
-                        <CardDisplay :cards="playedCards" @cardClicked="playSelected"/>
-                    </v-card-text>
-                </v-card>
-            </v-col>
-            <v-col class="flex-grow-0">
-                <v-card class="fill-height">
-                    <v-container fluid class="align-baseline fill-height">
-                        <v-row align="baseline">
-                            <v-simple-table class="flex-grow-1">
-                                <thead>
-                                <tr>
-                                    <th class="text-left">Username</th>
-                                    <th class="text-left">Score</th>
-                                    <th></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr v-for="item in players" :key="item.uid">
-                                    <td>{{ item.username }}</td>
-                                    <td class="text-left">
-                                        {{ item.score }}
-                                    </td>
-                                    <td v-if="item.czar">
-                                        czar
-                                    </td>
-                                    <td v-else>
+  <v-container fluid>
+    <v-row dense>
+      <v-col class="flex-grow-0">
+        <v-card class="fill-height">
+          <v-card-title>
+            Black Card
+          </v-card-title>
+          <v-card-text>
+            <CardDisplay :cards="blackCard"/>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col>
+        <v-card class="fill-height">
+          <v-card-title>
+            Played Cards
+          </v-card-title>
+          <v-card-text>
+            <Card v-for="card in playedCards" :key="card.id" :is-selectable="card.isSelectable" :id="card.id" :text="card.text" :is-white-card="card.isWhiteCard" v-model="card.isSelected"/>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col class="flex-grow-0">
+        <v-card class="fill-height">
+          <v-container fluid class="align-baseline fill-height">
+            <v-row align="baseline">
+              <v-simple-table class="flex-grow-1">
+                <thead>
+                <tr>
+                  <th class="text-left">Username</th>
+                  <th class="text-left">Score</th>
+                  <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="item in players" :key="item.uid">
+                  <td>{{ item.username }}</td>
+                  <td class="text-left">
+                    {{ item.score }}
+                  </td>
+                  <td v-if="item.czar">
+                    czar
+                  </td>
+                  <td v-else>
 
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </v-simple-table>
-                        </v-row>
-                        <v-row justify="center">
-                            <v-col>
-                                <v-btn>Settings</v-btn>
-                            </v-col>
-                            <v-col>
-                                <v-btn>Get Link</v-btn>
-                            </v-col>
-                            <v-col>
-                                <v-btn @click="submit">Submit</v-btn>
-                            </v-col>
-                        </v-row>
-                    </v-container>
-                </v-card>
-            </v-col>
-        </v-row>
-        <v-row>
-            <v-col>
-                <v-card>
-                    <v-card-title>
-                        Your Hand
-                    </v-card-title>
-                    <v-card-text>
-                        <CardDisplay :cards="hand" @cardClicked="handSelected"/>
-                    </v-card-text>
-                </v-card>
-            </v-col>
-        </v-row>
-        <v-row>
+                  </td>
+                </tr>
+                </tbody>
+              </v-simple-table>
+            </v-row>
+            <v-row justify="center">
+              <v-col>
+                <v-btn>Settings</v-btn>
+              </v-col>
+              <v-col>
+                <v-btn>Get Link</v-btn>
+              </v-col>
+              <v-col>
+                <v-btn @click="submit">Submit</v-btn>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col>
+        <v-card>
+          <v-card-title>
+            Your Hand
+          </v-card-title>
+          <v-card-text>
+            <v-row no-gutters>
+              <v-col v-for="card in hand" :key="card.id">
+                <Card :is-selectable="card.isSelectable" :id="card.id" :text="card.text" :is-white-card="card.isWhiteCard" v-model="card.isSelected"/>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row>
 
-        </v-row>
-    </v-container>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
     import CardDisplay from "../../components/CardDisplay";
+    import Card from "../../components/Card";
     import Events from '../../Events'
     import firebase from 'firebase/app'
     import 'firebase/auth'
     export default {
         name: "Game",
-        components: {CardDisplay},
+        components: {CardDisplay, Card},
         props: ['gameID'],
         data: () => {
             return {
@@ -210,22 +215,6 @@
                     }
                 }
             },
-            handSelected(e) {
-                const index = this.handSelectedCards.indexOf(e);
-                if (index !== -1) {
-                    this.handSelectedCards.splice(index, 1);
-                } else {
-                    this.handSelectedCards.push(e);
-                }
-            },
-            playSelected(e) {
-                const index = this.selectedPlayedCards.indexOf(e);
-                if (index !== -1) {
-                    this.selectedPlayedCards.splice(index, 1);
-                } else {
-                    this.selectedPlayedCards.push(e);
-                }
-            }
         }
     }
 </script>
