@@ -96,98 +96,103 @@
     import firebase from 'firebase/app'
     import crypto from 'crypto'
     import 'firebase/auth'
+
     export default {
         name: "Game",
         components: { Card },
         props: ['gameID'],
         data: () => {
-            return {
-                user: null,
-                hand: [],
-                playedCards: [],
-            }
+          return {
+            user: null,
+            hand: [],
+            playedCards: [],
+            blackCard: null,
+          }
         },
         created() {
             const ref = this;
             firebase.auth().onAuthStateChanged(user => {
-                if (user)
-                    ref.user = user;
-                else {
-                    ref.$store.commit('assignRedirectURL', ref.$route.path);
-                    ref.$router.push(`/login/`);
-                }
+              if (user)
+                ref.user = user;
+              if (this.$store.getters.getGame)
+                ref.blackCardUpdate();
+              else {
+                ref.$store.commit('assignRedirectURL', ref.$route.path);
+                ref.$router.push(`/login/`);
+              }
             });
         },
         watch: {
-            handFromStore: function () {
-                this.hand.splice(0, this.hand.length);
-                const cards = this.handFromStore;
-                cards.forEach(card => this.hand.push(card));
-            },
-            playedCardsFromStore: function () {
-                this.playedCards.splice(0, this.playedCards.length);
-                const cards = this.playedCardsFromStore;
-                cards.forEach(card => this.playedCards.push(card));
-            },
+          handFromStore: function () {
+            this.hand.splice(0, this.hand.length);
+            const cards = this.handFromStore;
+            cards.forEach(card => this.hand.push(card));
+          },
+          playedCardsFromStore: function () {
+            this.playedCards.splice(0, this.playedCards.length);
+            const cards = this.playedCardsFromStore;
+            cards.forEach(card => this.playedCards.push(card));
+          },
+          game: function () {
+            this.blackCardUpdate();
+          }
         },
         computed: {
             handFromStore() {
-                console.log("running youHand");
-                if (this.user) {
-                    const whiteCards = this.$store.getters.getWhiteCards;
-                    const czar_uid = this.$store.getters.getGame.currentRound.czar.uid;
-                    let isSelectable = !this.$store.getters.getGame.currentRound.picking;
-                    if (czar_uid === this.user.uid)
-                        isSelectable = false;
-                    const cards = this.$store.getters.getGame.hands.find(element => element.uid === this.user.uid).cards.map(id => {
-                        const card = whiteCards.find(card => id === card.id);
-                        card.isWhiteCard = true;
-                        card.isSelectable = isSelectable;
-                        card.isSelected = false;
-                        card.key = crypto.randomBytes(10).toString("hex");
+              console.log("running youHand");
+              if (this.user) {
+                const whiteCards = this.$store.getters.getWhiteCards;
+                const czar_uid = this.$store.getters.getGame.currentRound.czar.uid;
+                let isSelectable = !this.$store.getters.getGame.currentRound.picking;
+                if (czar_uid === this.user.uid)
+                  isSelectable = false;
+                const cards = this.$store.getters.getGame.hands.find(element => element.uid === this.user.uid).cards.map(id => {
+                  const card = whiteCards.find(card => id === card.id);
+                  card.isWhiteCard = true;
+                  card.isSelectable = isSelectable;
+                  card.isSelected = false;
+                  card.key = crypto.randomBytes(10).toString("hex");
 
-                      return card;
-                    });
-                    console.log(cards);
-                    return cards;
-                }
-                return [];
-
+                  return card;
+                });
+                console.log(cards);
+                return cards;
+              }
+              return [];
             },
-            blackCard() {
-                const blackCard = this.$store.getters.getGame.currentRound.blackCard;
-                return this.$store.getters.getBlackCards.find(value => value.id === blackCard);
+            game() {
+              return this.$store.getters.getGame;
             },
             playedCardsFromStore() {
-                const round = this.$store.getters.getGame.currentRound;
-                const whiteCards = this.$store.getters.getWhiteCards;
-                if (!this.user)
-                    return [];
-                if (round && round.picking) {
-                    const isSelectable = round.czar.uid === this.user.uid;
-                    return round.playedCards.map(playedCard => {
-                        const card = whiteCards.find(card => card.id === playedCard.card);
-                        card.isWhiteCard = true;
-                        card.isSelectable = isSelectable;
-                        card.isSelected = false;
-                        card.uid = playedCard.uid;
-                        card.key = crypto.randomBytes(10).toString("hex");
+              const round = this.$store.getters.getGame.currentRound;
+              const whiteCards = this.$store.getters.getWhiteCards;
+              if (!this.user)
+                return [];
+              if (round && round.picking) {
+                const isSelectable = round.czar.uid === this.user.uid;
+                return round.playedCards.map(playedCard => {
+                  const card = whiteCards.find(card => card.id === playedCard.card);
+                  card.isWhiteCard = true;
+                  card.isSelectable = isSelectable;
+                  card.isSelected = false;
+                  card.uid = playedCard.uid;
+                  card.key = crypto.randomBytes(10).toString("hex");
 
-                      return card;
-                    });
-                } else {
-                    return round.playedCards.map(playedCard => {
-                       return {
-                         id: playedCard.card,
-                         text: "",
-                         isWhiteCard: true,
-                         isSelectable: false,
-                         isSelected: false,
-                         uid: playedCard.uid,
-                         key: crypto.randomBytes(10).toString("hex"),
-                       }
-                    });
-                }
+                  return card;
+                });
+              } else {
+                return round.playedCards.map(playedCard => {
+                  return {
+                   id: playedCard.card,
+                   text: "",
+                   isWhiteCard: true,
+                   isSelectable: false,
+                   isSelected: false,
+                   uid: playedCard.uid,
+                   key: crypto.randomBytes(10).toString("hex"),
+                 }
+                });
+              }
             },
             players() {
                 return this.$store.getters.getGame.players.filter(player => player.isActive).map(player => {
@@ -222,6 +227,9 @@
                   }
                 }
             },
+          blackCardUpdate() {
+            this.blackCard = this.$store.getters.getBlackCards.find(card => card.id === this.game.currentRound.blackCard);
+          }
         }
     }
 </script>
